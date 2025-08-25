@@ -71,7 +71,7 @@ const Clients: React.FC = () => {
     }
 
     const phoneDigits = (formData.phone ?? '').toString().replace(/\D/g, '');
-    if (phoneDigits.length <= 7) {
+    if (phoneDigits.length != 10) {
       setFormError('Please enter a valid phone number.');
       return;
     }
