@@ -129,6 +129,10 @@ const Clients: React.FC = () => {
     setShowForm(true);
   };
 
+  const formatDate = (d?: string | Date | null) =>
+      d ? new Date(d).toLocaleString() : '—';
+
+
   return (
       <div className="space-y-6">
         <div className="bg-white shadow rounded-lg p-6">
@@ -163,11 +167,14 @@ const Clients: React.FC = () => {
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact</th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount Owed</th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Notes</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Updated</th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                   </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
                   {Array.isArray(clients) && clients.map((client) => (
+
                       <tr key={String(client._id ?? client.id)}>
                         <td className="px-6 py-4 whitespace-nowrap font-medium text-gray-900">{client.name}</td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -178,6 +185,8 @@ const Clients: React.FC = () => {
                           €{(client.amount_owed ?? 0).toLocaleString()}
                         </td>
                         <td className="px-6 py-4 text-sm text-gray-500 max-w-xs truncate">{client.notes}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{formatDate(client.created_at)}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{formatDate(client.updated_at)}</td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                           <button onClick={() => handleEdit(client)} className="text-indigo-600 hover:text-indigo-900 mr-3">Edit</button>
                           <button onClick={() => handleDelete(client._id ?? client.id)} className="text-red-600 hover:text-red-900">Delete</button>
