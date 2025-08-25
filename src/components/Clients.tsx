@@ -60,7 +60,6 @@ const Clients: React.FC = () => {
     e.preventDefault();
     setFormError(null);
 
-    // client-side validation for amount_owed
     if (formData.amount_owed === '' || formData.amount_owed == null) {
       setFormError('Please provide amount owed.');
       return;
@@ -68,6 +67,12 @@ const Clients: React.FC = () => {
     const parsedAmount = parseFloat(formData.amount_owed);
     if (Number.isNaN(parsedAmount)) {
       setFormError('amount_owed must be a valid number.');
+      return;
+    }
+
+    const phoneDigits = (formData.phone ?? '').toString().replace(/\D/g, '');
+    if (phoneDigits.length <= 7) {
+      setFormError('Please enter a valid phone number.');
       return;
     }
 
