@@ -208,7 +208,7 @@ const Clients: React.FC = () => {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">Phone</label>
+                    <label className="block text-sm font-medium text-gray-700">Phone *</label>
                     <input
                         type="tel"
                         value={formData.phone}
@@ -226,7 +226,7 @@ const Clients: React.FC = () => {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">Amount Owed (€)</label>
+                    <label className="block text-sm font-medium text-gray-700">Amount Owed* (€)</label>
                     <input
                         type="number"
                         step="0.01"
