@@ -2,7 +2,20 @@ import { useState, useEffect } from "react";
 import {api} from "../context/auth.ts"
 import "../App.css";
 import axios from "axios";
-import type {Supplier} from "../types.ts";
+
+
+interface Supplier {
+  _id?: string;
+  id?: string;
+  user_id?: string;
+  name: string;
+  phone?: string;
+  email?: string;
+  amount_owed?: number;
+  notes?: string;
+  created_at?: string | Date;
+  updated_at?: string | Date;
+}
 
 const Suppliers: React.FC = () => {
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
@@ -11,6 +24,7 @@ const Suppliers: React.FC = () => {
   const [showForm, setShowForm] = useState(false);
   const [editingSupplier, setEditingSupplier] = useState<Supplier | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [viewingNotes, setViewingNotes] = useState<{text: string, id: string} | null>(null);
   const [formData, setFormData] = useState({
     name: "",
     phone: "",
@@ -119,6 +133,9 @@ const Suppliers: React.FC = () => {
   const formatDate = (d?: string | Date | null) =>
       d ? new Date(d).toLocaleString() : '—';
 
+  const handleViewNotes = (notes: string, id: string) => {
+    setViewingNotes({ text: notes, id });
+  };
 
   return (
       <div className="space-y-6">
@@ -147,16 +164,16 @@ const Suppliers: React.FC = () => {
               <div className="text-center py-8">Loading...</div>
           ) : (
               <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
+                <table className="min-w-full divide-y divide-gray-200 table-fixed">
                   <thead className="bg-gray-50">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount Owed</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Notes</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Updated</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/6">Name</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/6">Contact</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/8">Amount Owed</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/5">Notes</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/8">Created</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/8">Updated</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/8">Actions</th>
                   </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
@@ -170,7 +187,15 @@ const Suppliers: React.FC = () => {
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-red-600">
                           €{(supplier.amount_owed ?? 0).toLocaleString()}
                         </td>
-                        <td className="px-6 py-4 text-sm text-gray-500 max-w-xs truncate">{supplier.notes}</td>
+                        <td className="px-6 py-4 text-sm text-gray-500 relative">
+                          <div className="max-h-12 overflow-hidden">
+                            {supplier.notes ? (
+                                <div className="line-clamp-2 hover:cursor-pointer" onClick={() => handleViewNotes(supplier.notes || "", String(supplier._id ?? supplier.id))}>
+                                  {supplier.notes}
+                                </div>
+                            ) : "—"}
+                          </div>
+                        </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{formatDate(supplier.created_at)}</td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{formatDate(supplier.updated_at)}</td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
@@ -259,6 +284,38 @@ const Suppliers: React.FC = () => {
                 </form>
                 <div>
                   {formError && <div role="alert" className="form-error" style={{ color: 'red' }}>{formError}</div>}
+                </div>
+              </div>
+            </div>
+        )}
+
+        {/* Notes modal */}
+        {viewingNotes && (
+            <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50">
+              <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-2xl">
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-lg font-medium text-gray-900">Notes</h3>
+                  <button
+                      onClick={() => setViewingNotes(null)}
+                      className="text-gray-400 hover:text-gray-500 focus:outline-none"
+                  >
+                    <span className="sr-only">Close</span>
+                    <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+                <div className="mt-2 max-h-96 overflow-y-auto">
+                  <p className="text-sm text-gray-500 whitespace-pre-wrap">{viewingNotes.text}</p>
+                </div>
+                <div className="mt-4">
+                  <button
+                      type="button"
+                      className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:w-auto sm:text-sm"
+                      onClick={() => setViewingNotes(null)}
+                  >
+                    Close
+                  </button>
                 </div>
               </div>
             </div>
