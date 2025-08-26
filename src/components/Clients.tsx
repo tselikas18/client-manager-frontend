@@ -2,20 +2,8 @@ import { useState, useEffect } from "react";
 import {api} from "../context/auth.ts"
 import "../App.css";
 import axios from "axios";
+import Client from "../types.ts"
 
-
-interface Client {
-  _id?: string;
-  id?: string;
-  user_id?: string;
-  name: string;
-  phone?: string;
-  email?: string;
-  amount_owed?: number;
-  notes?: string;
-  created_at?: string | Date;
-  updated_at?: string | Date;
-}
 
 const Clients: React.FC = () => {
   const [clients, setClients] = useState<Client[]>([]);

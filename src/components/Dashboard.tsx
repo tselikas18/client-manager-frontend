@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
 import "../App.css";
-import { useAuth } from "../context/auth.ts";
+import {api, useAuth} from "../context/auth.ts";
 
 interface Contact {
   id: number | string;
@@ -32,7 +31,7 @@ const Dashboard: React.FC = () => {
 
   const fetchDashboardStats = async () => {
     try {
-      const response = await axios.get<DashboardStats>("/dashboard");
+      const response = await api.get<DashboardStats>("/dashboard");
       setStats(response.data);
     } catch (error) {
       console.error("Failed to fetch dashboard stats:", error);
@@ -58,7 +57,7 @@ const Dashboard: React.FC = () => {
               <div className="flex items-center">
                 <div className="flex-shrink-0">
                   <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
-                    <span className="text-white font-bold">₹</span>
+                    <span className="text-white font-bold">€</span>
                   </div>
                 </div>
                 <div className="ml-5 w-0 flex-1">
@@ -78,7 +77,7 @@ const Dashboard: React.FC = () => {
               <div className="flex items-center">
                 <div className="flex-shrink-0">
                   <div className="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center">
-                    <span className="text-white font-bold">₹</span>
+                    <span className="text-white font-bold">€</span>
                   </div>
                 </div>
                 <div className="ml-5 w-0 flex-1">
@@ -100,7 +99,7 @@ const Dashboard: React.FC = () => {
                   <div
                       className={`w-8 h-8 ${((stats?.net_position ?? 0) >= 0 ? "bg-green-500" : "bg-red-500")} rounded-full flex items-center justify-center`}
                   >
-                    <span className="text-white font-bold">₹</span>
+                    <span className="text-white font-bold">€</span>
                   </div>
                 </div>
                 <div className="ml-5 w-0 flex-1">
@@ -147,7 +146,7 @@ const Dashboard: React.FC = () => {
                           <p className="font-medium">{client.name}</p>
                           <p className="text-sm text-gray-500">{client.email || client.phone}</p>
                         </div>
-                        <p className="font-medium text-green-600">₹{(client.amount_owed ?? 0).toLocaleString()}</p>
+                        <p className="font-medium text-green-600">€{(client.amount_owed ?? 0).toLocaleString()}</p>
                       </div>
                   ))}
                 </div>
@@ -166,7 +165,7 @@ const Dashboard: React.FC = () => {
                           <p className="font-medium">{supplier.name}</p>
                           <p className="text-sm text-gray-500">{supplier.email || supplier.phone}</p>
                         </div>
-                        <p className="font-medium text-red-600">₹{(supplier.amount_owed ?? 0).toLocaleString()}</p>
+                        <p className="font-medium text-red-600">€{(supplier.amount_owed ?? 0).toLocaleString()}</p>
                       </div>
                   ))}
                 </div>

@@ -2,8 +2,7 @@ import {useState} from "react";
 import {useNavigate} from "react-router";
 import "../App.css";
 import {useAuth} from "../context/auth.ts";
-
-type AuthResult = { success: true } | { success: false; error: string };
+import type {AuthResult} from "../types.ts";
 
 const LoginPage = () => {
   const [isLogin, setIsLogin] = useState(true);

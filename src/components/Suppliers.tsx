@@ -2,20 +2,7 @@ import { useState, useEffect } from "react";
 import {api} from "../context/auth.ts"
 import "../App.css";
 import axios from "axios";
-
-
-interface Supplier {
-  _id?: string;
-  id?: string;
-  user_id?: string;
-  name: string;
-  phone?: string;
-  email?: string;
-  amount_owed?: number;
-  notes?: string;
-  created_at?: string | Date;
-  updated_at?: string | Date;
-}
+import type {Supplier} from "../types.ts";
 
 const Suppliers: React.FC = () => {
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
