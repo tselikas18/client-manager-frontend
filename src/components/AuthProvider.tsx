@@ -15,7 +15,10 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => 
   useEffect(() => {
     let mounted = true;
 
-    api.defaults.withCredentials = true;
+    const token = localStorage.getItem('authToken');
+    if (token) {
+      api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    }
 
     (async () => {
       try {
@@ -23,6 +26,10 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => 
         if (mounted) setUser(mapToUser(res.data));
       } catch (err: any) {
         console.error('fetchMe error:', err?.response || err);
+        if (err?.response?.status === 401) {
+          localStorage.removeItem('authToken');
+          delete api.defaults.headers.common['Authorization'];
+        }
       } finally {
         if (mounted) setLoading(false);
       }
@@ -33,10 +40,14 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => 
 
   const login = async (email: string, password: string) => {
     try {
-      await api.post('/auth/login', { email, password });
+      const response = await api.post('/auth/login', { email, password });
+      const { token, user } = response.data;
 
-      const res = await api.get('/auth/me');
-      setUser(mapToUser(res.data));
+      localStorage.setItem('authToken', token);
+
+      api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+
+      setUser(mapToUser(user));
 
       return { success: true };
     } catch (error: unknown) {
@@ -45,6 +56,18 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => 
       }
       if (error instanceof Error) return { success: false, error: error.message };
       return { success: false, error: String(error) };
+    }
+  };
+
+  const logout = async () => {
+    try {
+      localStorage.removeItem('authToken');
+
+      delete api.defaults.headers.common['Authorization'];
+
+      setUser(null);
+    } catch (error) {
+      console.error('Logout error:', error);
     }
   };
 
@@ -61,14 +84,6 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => 
     }
   };
 
-  const logout = async () => {
-    try {
-      document.cookie = "authenticated=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-      setUser(null);
-    } catch (error) {
-      console.error('Logout error:', error);
-    }
-  };
 
   return (
       <AuthContext.Provider value={{ user, login, register, logout, loading }}>

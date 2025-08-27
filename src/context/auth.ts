@@ -17,9 +17,13 @@ export interface AuthContextType {
 
 export const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8000',
-  withCredentials: true,
   timeout: 10000,
 });
+
+const token = localStorage.getItem('authToken');
+if (token) {
+  api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+}
 
 export const AuthContext = createContext<AuthContextType | null>(null);
 
