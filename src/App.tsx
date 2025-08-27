@@ -18,8 +18,8 @@ function App() {
             <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
             <Route path="/clients" element={<ProtectedRoute><Clients /></ProtectedRoute>} />
             <Route path="/suppliers" element={<ProtectedRoute><Suppliers /></ProtectedRoute>} />
-            <Route path="/" element={<Navigate to="/clients" replace />} />
-            {/*<Route path="/" element={<Navigate to="/dashboard" replace />} />*/}
+            {/*<Route path="/" element={<Navigate to="/clients" replace />} />*/}
+            <Route path="/" element={<Navigate to="/dashboard" replace />} />
           </Routes>
         </BrowserRouter>
       </AuthProvider>
