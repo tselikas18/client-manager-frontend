@@ -2,27 +2,14 @@ import { useState, useEffect } from "react";
 import {api} from "../context/auth.ts"
 import "../App.css";
 import axios from "axios";
+import type { Client } from "../types.ts";
 
-
-interface Supplier {
-  _id?: string;
-  id?: string;
-  user_id?: string;
-  name: string;
-  phone?: string;
-  email?: string;
-  amount_owed?: number;
-  notes?: string;
-  created_at?: string | Date;
-  updated_at?: string | Date;
-}
-
-const Suppliers: React.FC = () => {
-  const [suppliers, setSuppliers] = useState<Supplier[]>([]);
+const Clients: React.FC = () => {
+  const [clients, setClients] = useState<Client[]>([]);
   const [formError, setFormError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
-  const [editingSupplier, setEditingSupplier] = useState<Supplier | null>(null);
+  const [editingClient, setEditingClient] = useState<Client | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [viewingNotes, setViewingNotes] = useState<{text: string, id: string} | null>(null);
   const [formData, setFormData] = useState({
@@ -34,24 +21,24 @@ const Suppliers: React.FC = () => {
   });
 
   useEffect(() => {
-    fetchSuppliers();
+    fetchClients();
   }, [searchTerm]);
 
   useEffect(() => {
-    const t = setTimeout(() => { fetchSuppliers(); }, 300);
+    const t = setTimeout(() => { fetchClients(); }, 300);
     return () => clearTimeout(t);
   }, [searchTerm]);
 
-  const fetchSuppliers = async () => {
+  const fetchClients = async () => {
     try {
       const q = searchTerm.trim();
       const params = q ? { search: q } : {};
-      console.log("fetchSuppliers params:", params);
-      const response = await api.get<Supplier[]>("/suppliers", { params });
-      console.log("fetchSuppliers response:", response.data.length);
-      setSuppliers(response.data);
+      console.log("fetchClients params:", params);
+      const response = await api.get<Client[]>("/clients", { params });
+      console.log("fetchClients response:", response.data.length);
+      setClients(response.data);
     } catch (error) {
-      console.error("Failed to fetch suppliers:", error);
+      console.error("Failed to fetch clients:", error);
     } finally {
       setLoading(false);
     }
@@ -83,21 +70,21 @@ const Suppliers: React.FC = () => {
         amount_owed: parsedAmount,
       };
 
-      if (editingSupplier) {
-        const editId = String(editingSupplier._id ?? editingSupplier.id);
-        await api.put(`/suppliers/${editId}`, data);
+      if (editingClient) {
+        const editId = String(editingClient._id ?? editingClient.id);
+        await api.put(`/clients/${editId}`, data);
       } else {
-        await api.post('/suppliers/', data);
+        await api.post('/clients/', data);
       }
 
       setShowForm(false);
-      setEditingSupplier(null);
+      setEditingClient(null);
       setFormData({ name: '', phone: '', email: '', amount_owed: '', notes: '' });
-      fetchSuppliers();
+      fetchClients();
     } catch (err: unknown) {
-      console.error('Failed to save supplier:', err);
+      console.error('Failed to save client:', err);
       if (axios.isAxiosError(err)) {
-        const msg = err.response?.data?.error ?? err.response?.data?.message ?? 'Failed to save supplier';
+        const msg = err.response?.data?.error ?? err.response?.data?.message ?? 'Failed to save client';
         setFormError(msg);
       } else if (err instanceof Error) {
         setFormError(err.message);
@@ -107,25 +94,25 @@ const Suppliers: React.FC = () => {
     }
   };
 
-  const handleDelete = async (supplierId?: string) => {
-    console.log('handleDelete called with id:', supplierId);
-    if (!supplierId) {
-      console.error("No supplier id provided to delete");
+  const handleDelete = async (clientId?: string) => {
+    console.log('handleDelete called with id:', clientId);
+    if (!clientId) {
+      console.error("No client id provided to delete");
       return;
     }
     if (!confirm("Are you sure?")) return;
-    await api.delete(`/suppliers/${supplierId}`);
-    setSuppliers(prev => prev.filter(s => String(s._id ?? s.id) !== String(supplierId)));
+    await api.delete(`/clients/${clientId}`);
+    setClients(prev => prev.filter(c => String(c._id ?? c.id) !== String(clientId)));
   };
 
-  const handleEdit = (supplier: Supplier) => {
-    setEditingSupplier(supplier);
+  const handleEdit = (client: Client) => {
+    setEditingClient(client);
     setFormData({
-      name: supplier.name,
-      phone: supplier.phone || "",
-      email: supplier.email || "",
-      amount_owed: (supplier.amount_owed ?? 0).toString(),
-      notes: supplier.notes || "",
+      name: client.name,
+      phone: client.phone || "",
+      email: client.email || "",
+      amount_owed: (client.amount_owed ?? 0).toString(),
+      notes: client.notes || "",
     });
     setShowForm(true);
   };
@@ -141,19 +128,19 @@ const Suppliers: React.FC = () => {
       <div className="space-y-6">
         <div className="bg-white shadow rounded-lg p-6">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-2xl font-bold text-gray-900">Suppliers</h2>
+            <h2 className="text-2xl font-bold text-gray-900">Clients</h2>
             <button
                 onClick={() => setShowForm(true)}
                 className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700"
             >
-              Add Supplier
+              Add Client
             </button>
           </div>
 
           <div className="mb-4">
             <input
                 type="text"
-                placeholder="Search suppliers..."
+                placeholder="Search clients..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
@@ -177,30 +164,30 @@ const Suppliers: React.FC = () => {
                   </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
-                  {Array.isArray(suppliers) && suppliers.map((supplier) => (
-                      <tr key={String(supplier._id ?? supplier.id)}>
-                        <td className="px-6 py-4 whitespace-nowrap font-medium text-gray-900">{supplier.name}</td>
+                  {Array.isArray(clients) && clients.map((client) => (
+                      <tr key={String(client._id ?? client.id)}>
+                        <td className="px-6 py-4 whitespace-nowrap font-medium text-gray-900">{client.name}</td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {supplier.email && <div>{supplier.email}</div>}
-                          {supplier.phone && <div>{supplier.phone}</div>}
+                          {client.email && <div>{client.email}</div>}
+                          {client.phone && <div>{client.phone}</div>}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-red-600">
-                          €{(supplier.amount_owed ?? 0).toLocaleString()}
+                          €{(client.amount_owed ?? 0).toLocaleString()}
                         </td>
                         <td className="px-6 py-4 text-sm text-gray-500 relative">
                           <div className="max-h-12 overflow-hidden">
-                            {supplier.notes ? (
-                                <div className="line-clamp-2 hover:cursor-pointer" onClick={() => handleViewNotes(supplier.notes || "", String(supplier._id ?? supplier.id))}>
-                                  {supplier.notes}
+                            {client.notes ? (
+                                <div className="line-clamp-2 hover:cursor-pointer" onClick={() => handleViewNotes(client.notes || "", String(client._id ?? client.id))}>
+                                  {client.notes}
                                 </div>
                             ) : "—"}
                           </div>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{formatDate(supplier.created_at)}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{formatDate(supplier.updated_at)}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{formatDate(client.created_at)}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{formatDate(client.updated_at)}</td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                          <button onClick={() => handleEdit(supplier)} className="text-indigo-600 hover:text-indigo-900 mr-3">Edit</button>
-                          <button onClick={() => handleDelete(supplier._id ?? supplier.id)} className="text-red-600 hover:text-red-900">Delete</button>
+                          <button onClick={() => handleEdit(client)} className="text-indigo-600 hover:text-indigo-900 mr-3">Edit</button>
+                          <button onClick={() => handleDelete(client._id ?? client.id)} className="text-red-600 hover:text-red-900">Delete</button>
                         </td>
                       </tr>
                   ))}
@@ -214,7 +201,7 @@ const Suppliers: React.FC = () => {
             <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50">
               <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-md">
                 <h3 className="text-lg font-medium text-gray-900 mb-4">
-                  {editingSupplier ? "Edit Supplier" : "Add New Supplier"}
+                  {editingClient ? "Edit Client" : "Add New Client"}
                 </h3>
                 <form onSubmit={handleSubmit} className="space-y-4">
                   <div>
@@ -269,7 +256,7 @@ const Suppliers: React.FC = () => {
                         type="button"
                         onClick={() => {
                           setShowForm(false);
-                          setEditingSupplier(null);
+                          setEditingClient(null);
                           setFormData({ name: "", phone: "", email: "", amount_owed: "", notes: "" });
                           setFormError(null)
                         }}
@@ -278,7 +265,7 @@ const Suppliers: React.FC = () => {
                       Cancel
                     </button>
                     <button type="submit" className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">
-                      {editingSupplier ? "Update" : "Add"}
+                      {editingClient ? "Update" : "Add"}
                     </button>
                   </div>
                 </form>
@@ -324,4 +311,4 @@ const Suppliers: React.FC = () => {
   );
 };
 
-export default Suppliers;
+export default Clients;
