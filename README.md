@@ -196,11 +196,3 @@ VITE_API_BASE=https://your-api-domain.com
 ### Deploy to Vercel/Netlify
 
 The application is ready for deployment to static hosting services like Vercel or Netlify. Simply connect your repository and the build process will be handled automatically.
-
-## License
-
-This project is licensed under the MIT License.
-
-## Support
-
-For support or questions, please open an issue in the repository or contact the development team.
