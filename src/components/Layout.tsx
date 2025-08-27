@@ -2,6 +2,7 @@ import {useNavigate} from "react-router";
 import "../App.css";
 import {useAuth} from "../context/auth.ts";
 import React from "react";
+import tradeFlow from "../assets/tradeFlow.png"
 
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, logout } = useAuth();
@@ -16,7 +17,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
               <div className="flex items-center">
                 <div className="flex-shrink-0 flex items-center">
                   <img
-                      src="/src/assets/tradeFlow.png"
+                      src={tradeFlow}
                       alt="TradeFlow Logo"
                       className="h-8 w-auto mr-2"
                   />
@@ -65,7 +66,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             <div className="flex flex-col md:flex-row justify-between items-center">
               <div className="flex items-center mb-4 md:mb-0">
                 <img
-                    src="/src/assets/tradeFlow.png"
+                    src={tradeFlow}
                     alt="TradeFlow Logo"
                     className="h-6 w-auto mr-2"
                 />
