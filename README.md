@@ -63,7 +63,7 @@ A modern React-based web application for managing business debts and credits. Th
 
 1. Clone the repository:
 ```bash
-git clone <repository-url>
+git clone https://github.com/tselikas18/client-manager-frontend.git
 cd client-manager-frontend
 ```
 
@@ -88,7 +88,7 @@ The application will be available at `http://localhost:5173`
 ## Available Scripts
 
 - `vite` - Start development server
-- `tsc -b && vite build` - Build for production
+- `npm install && tsc -b && vite build` - Build for production
 - `eslint` - Run ESLint
 - `vite preview` - Preview production build
 
@@ -182,7 +182,7 @@ The application is fully responsive and optimized for:
 ### Build for Production
 
 ```bash
-tsc -b && vite build
+npm install && tsc -b && vite build
 ```
 
 This creates an optimized build in the `dist/` directory.
@@ -193,6 +193,14 @@ This creates an optimized build in the `dist/` directory.
 VITE_API_BASE=https://your-api-domain.com
 ```
 
-### Deploy to Vercel/Netlify
-
-The application is ready for deployment to static hosting services like Vercel or Netlify. Simply connect your repository and the build process will be handled automatically.
+## 🚀 Deployment On Render
+- Deploying the frontend as a Static Site on Render:
+**Create a new Static Site on Render**
+**Connect your GitHub repository**
+**Configure the site:**
+- **Build Command: npm install && npm run build**
+- **Publish Directory: dist**
+- **Environment Variables:**
+- - **VITE_API_URL: URL of your backend API (e.g., https://your-api-name.onrender.com/)**
+**Click "Create Static Site"**
+- Your application will be available at your Render URL. For custom domains, configure them in the Render dashboard.
